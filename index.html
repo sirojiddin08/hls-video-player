@@ -1,0 +1,61 @@
+<html>
+
+<head>
+    <title>Hls.js demo - basic usage</title>
+</head>
+
+<body>
+    <script src="hls.js"></script>
+    <video height="300" id="video" controls></video> <br>
+
+    <textarea id="url_id" cols="80" rows="10"></textarea> <br>
+    <input id="camCode" type="text" placeholder="cam code" value="1507">
+    <input id="type" type="text" placeholder="type" value="hls">
+    <button onclick="playvideo()">Play Video</button>
+
+    <script>
+        async function playvideo() {
+            var video = document.getElementById('video');
+            var url_id = document.getElementById('url_id');
+            var camCode = document.getElementById('camCode').value;
+            var type = document.getElementById('type').value;
+
+            const response = await fetch('http://localhost:3000/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    cam_code: camCode,
+                    type: type
+                })
+            });
+
+            const data = await response.json();
+            console.log(data.url);
+            url_id.value = data.url;
+            if (Hls.isSupported()) {
+                var hls = new Hls({
+                    debug: true,
+                });
+                hls.loadSource(data.url);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MEDIA_ATTACHED, function () {
+                    video.muted = true;
+                    video.play();
+                });
+            }
+            // hls.js is not supported on platforms that do not have Media Source Extensions (MSE) enabled.
+            // When the browser has built-in HLS support (check using `canPlayType`), we can provide an HLS manifest (i.e. .m3u8 URL) directly to the video element through the `src` property.
+            // This is using the built-in support of the plain video element, without using hls.js.
+            else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = data.url;
+                video.addEventListener('canplay', function () {
+                    video.play();
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>
