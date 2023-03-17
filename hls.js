@@ -27527,21 +27527,22 @@ typeof window !== "undefined" &&
 
                         function enableLogs(debugConfig, id) {
                             // check that console is available
-                            if (self.console && debugConfig === true || typeof debugConfig === 'object') {
-                                exportLoggerFunctions(debugConfig,
-                                    // Remove out from list here to hard-disable a log-level
-                                    // 'trace',
-                                    'debug', 'log', 'info', 'warn', 'error');
-                                // Some browsers don't allow to use bind on console object anyway
-                                // fallback to default if needed
-                                try {
-                                    exportedLogger.log("Debug logs enabled for \"" + id + "\"");
-                                } catch (e) {
-                                    exportedLogger = fakeLogger;
-                                }
-                            } else {
-                                exportedLogger = fakeLogger;
-                            }
+                            console.log('debugConfig', debugConfig, 'id', id);
+                            // if (self.console && debugConfig === true || typeof debugConfig === 'object') {
+                            //     exportLoggerFunctions(debugConfig,
+                            //         // Remove out from list here to hard-disable a log-level
+                            //         // 'trace',
+                            //         'debug', 'log', 'info', 'warn', 'error');
+                            //     // Some browsers don't allow to use bind on console object anyway
+                            //     // fallback to default if needed
+                            //     try {
+                            //         exportedLogger.log("Debug logs enabled for \"" + id + "\"");
+                            //     } catch (e) {
+                            //         exportedLogger = fakeLogger;
+                            //     }
+                            // } else {
+                            //     exportedLogger = fakeLogger;
+                            // }
                         }
                         var logger = exportedLogger;
 

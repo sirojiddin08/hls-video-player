@@ -9,14 +9,17 @@
     <video height="300" id="video" controls></video> <br>
 
     <textarea id="url_id" cols="80" rows="10"></textarea> <br>
+    <textarea id="input_url" cols="80" rows="10" placeholder="input_url"></textarea> <br>
     <input id="camCode" type="text" placeholder="cam code" value="1507">
     <input id="type" type="text" placeholder="type" value="hls">
     <button onclick="playvideo()">Play Video</button>
+    <button onclick="input_url_playvideo()">Play Input Url Video</button>
 
     <script>
         async function playvideo() {
             var video = document.getElementById('video');
             var url_id = document.getElementById('url_id');
+            var input_url = document.getElementById('input_url');
             var camCode = document.getElementById('camCode').value;
             var type = document.getElementById('type').value;
 
@@ -41,15 +44,45 @@
                 hls.loadSource(data.url);
                 hls.attachMedia(video);
                 hls.on(Hls.Events.MEDIA_ATTACHED, function () {
-                    video.muted = true;
+                    // video.muted = false;
+                    video.play();
+                });
+                // hls.on(Hls.Events.MANIFEST_LOADED, () => {
+                //     const audioTracks = hls.audioTracks;
+                //     console.log(audioTracks); // Print the available audio tracks
+                //     const selectedAudioTrack = audioTracks[0]; // Select the first available audio track
+                //     hls.audioTrack = selectedAudioTrack.id;
+                // });
+                setTimeout(function () {
+                    // hls.destroy();
+                    console.log('destroyed');
+                    // playvideo()
+                }, 10000);
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                console.log("not supported hls");
+                video.src = data.url;
+                video.addEventListener('canplay', function () {
                     video.play();
                 });
             }
-            // hls.js is not supported on platforms that do not have Media Source Extensions (MSE) enabled.
-            // When the browser has built-in HLS support (check using `canPlayType`), we can provide an HLS manifest (i.e. .m3u8 URL) directly to the video element through the `src` property.
-            // This is using the built-in support of the plain video element, without using hls.js.
-            else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                video.src = data.url;
+        }
+
+        function input_url_playvideo() {
+            var video = document.getElementById('video');
+            var input_url = document.getElementById('input_url').value;
+
+            if (Hls.isSupported()) {
+                var hls = new Hls({
+                    debug: true,
+                });
+                hls.loadSource(input_url);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MEDIA_ATTACHED, function () {
+                    video.play();
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                console.log("not supported hls");
+                video.src = input_url;
                 video.addEventListener('canplay', function () {
                     video.play();
                 });
